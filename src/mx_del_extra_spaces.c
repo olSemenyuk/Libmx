@@ -1,24 +1,22 @@
 #include "libmx.h"
 
 char *mx_del_extra_spaces(const char *str) {
-    char *clear = NULL;
-    char *tmp = NULL;
+    char *tmp;
+    int size = mx_strlen(str);
+    char *ret = (char*) malloc(size * sizeof(char) + 1);
     int j = 0;
-    
-    if (NULL == str)
-        return NULL;
-    tmp = mx_strnew(mx_strlen(str));
+
     for (int i = 0; str[i] != '\0'; i++) {
-        if (mx_isspace(str[i]) == 0) {
-            tmp[j] = str[i];
-            j++;
+        if (mx_isspace(str[i])) {
+          ret[j++] = str[i];
+          while (mx_isspace(str[i++]));
+          i--;
+          ret[j++] = str[i];
+          continue;
         }
-        if (mx_isspace(str[i]) == 0 && mx_isspace(str[i + 1]) == 1) {
-            tmp[j] = ' ';
-            j++;
-        }
+        ret[j++] = str[i];
     }
-    clear = mx_strtrim(tmp);
-    mx_strdel(&tmp);
-    return clear;
+    ret[size] = '\0';
+    tmp = mx_strtrim(ret);
+    return tmp;
 }

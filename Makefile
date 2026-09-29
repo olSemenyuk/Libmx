@@ -1,44 +1,40 @@
 # ======== variables ========
-NAME = libmx.a
-
-# -- files and dirs --
+NAME := libmx.a
 SRC_DIR := src
 OBJ_DIR := obj
 INC_DIR := inc
 
 SRC_FILES := $(wildcard $(SRC_DIR)/*.c)
-OBJ_FILES := $(addprefix $(OBJ_DIR)/, $(notdir $(SRC_FILES:%.c=%.o)))
-INC_FILES := $(wildcard $(INC_DIR)/*.h)
+OBJ_FILES := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRC_FILES))
 
 # -- commands --
 MKDIR := mkdir -p
 RM := rm -rf
-
 CC := clang
-FLAGS := -std=c11 -Wall -Wextra -Werror -Wpedantic
+AR := ar
+ARFLAGS := rcs
+CPPFLAGS := -I$(INC_DIR)
+CFLAGS := -std=c11 -Wall -Wextra -Werror -Wpedantic
 
 # ========== body =========
-all: install
+all: $(NAME)
 
 install: $(NAME)
 
 $(NAME): $(OBJ_FILES)
-	@ar rcs $@ $^
-
-$(OBJ_FILES): | $(OBJ_DIR)
-
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(INC_FILES)
-	@$(CC) $(FLAGS) -c  $< -o $@ -I $(INC_DIR)
+	$(AR) $(ARFLAGS) $@ $^
 
 $(OBJ_DIR):
-	@$(MKDIR) $@
+	$(MKDIR) $@
 
-uninstall: clean
-	@$(RM) $(NAME)
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(INC_DIR)/libmx.h | $(OBJ_DIR)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
 clean:
-	@$(RM) $(OBJ_DIR)
+	$(RM) $(OBJ_DIR) $(NAME)
 
-reinstall: uninstall install
+uninstall: clean
 
-.PHONY: all uninstall clean reinstall
+reinstall: clean all
+
+.PHONY: all install uninstall clean reinstall
