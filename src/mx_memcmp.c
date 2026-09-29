@@ -1,15 +1,12 @@
 #include "libmx.h"
 
 int mx_memcmp(const void *s1, const void *s2, size_t n) {
-    char *cs1 = (char *)s1;
-    char *cs2 = (char *)s2;
-    size_t i;   
+    const unsigned char *a = s1;
+    const unsigned char *b = s2;
 
-    for (i = 0; i < n; i++, cs1++, cs2++) {
-        if (*cs1 < *cs2)
-            return *cs1 - *cs2;
-        else if (*cs1 > *cs2)
-            return *cs1 - *cs2;
+    for (size_t i = 0; i < n; i++) {
+        if (a[i] != b[i])
+            return a[i] - b[i];
     }
     return 0;
 }

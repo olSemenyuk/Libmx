@@ -1,20 +1,22 @@
 #include "libmx.h"
 
 unsigned long mx_hex_to_nbr(const char *hex) {
-    unsigned long decimal = 0;
-    int i = 0;
-    int val;
-    int len = mx_strlen(hex) - 1;
+    unsigned long res = 0;
 
-    for (i = 0; hex[i] != '\0'; i++) {
+    if (hex == NULL)
+        return 0;
+    for (int i = 0; hex[i] != '\0'; i++) {
+        int val;
+
         if (hex[i] >= '0' && hex[i] <= '9')
-            val = hex[i] - 48;
-        if (mx_islower(hex[i]))
-            val = hex[i] - 97 + 10;
-        if (mx_isupper(hex[i]))
-            val = hex[i] - 65 + 10;
-        decimal += val * mx_pow(16, len);
-        len--;
+            val = hex[i] - '0';
+        else if (hex[i] >= 'a' && hex[i] <= 'f')
+            val = hex[i] - 'a' + 10;
+        else if (hex[i] >= 'A' && hex[i] <= 'F')
+            val = hex[i] - 'A' + 10;
+        else
+            return 0;
+        res = res * 16 + (unsigned long)val;
     }
-    return decimal;
+    return res;
 }
