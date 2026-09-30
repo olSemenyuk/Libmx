@@ -1,3 +1,7 @@
+#if !defined(__APPLE__)
+#define _DEFAULT_SOURCE
+#endif
+
 #include "libmx.h"
 
 #if defined(__APPLE__)

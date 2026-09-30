@@ -1,14 +1,13 @@
 #include "libmx.h"
 
 void *mx_memrchr(const void *s, int c, size_t n) {
-    const unsigned char *nachalo = s;
-    const unsigned char *konec = (const unsigned char *)s + n;
-    void *neobh = NULL;
+    const unsigned char *p = s;
+    unsigned char uc = (unsigned char)c;
 
-    while (konec > nachalo) {
-        if (*nachalo == (unsigned char)c)
-        neobh = (void*)nachalo;
-        nachalo++;
+    while (n > 0) {
+        n--;
+        if (p[n] == uc)
+            return (void *)(p + n);
     }
-    return neobh;
+    return NULL;
 }

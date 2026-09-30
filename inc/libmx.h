@@ -66,7 +66,6 @@ char **mx_strsplit(const char *s, char c);
 char *mx_strjoin(const char *s1, const char *s2);
 char *mx_file_to_str(const char *filename);
 char *mx_replace_substr(const char *str, const char *sub, const char *replace);
-int mx_strcmp(const char *s1, const char *s2);
 
 // MEMORY PACK
 void *mx_memset(void *b, int c, size_t len);

@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master, logic_improvements]
+    paths-ignore: ['**.md']
+  pull_request:
+    paths-ignore: ['**.md']
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: ${{ matrix.os }} / ${{ matrix.cc }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest, cc: clang }
+          - { os: ubuntu-latest, cc: gcc }
+          - { os: macos-latest,  cc: clang }
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: make CC=${{ matrix.cc }}
+      - name: Test (ASan + UBSan)
+        run: make test CC=${{ matrix.cc }}
