@@ -6,7 +6,8 @@
 #include <string.h>
 #include <fcntl.h>
 #include <limits.h>
-#include <malloc/malloc.h>
+#include <stddef.h>
+#include <wchar.h>
 
 typedef struct s_list {
     void *data;
