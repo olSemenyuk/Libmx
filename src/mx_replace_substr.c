@@ -1,28 +1,39 @@
 #include "libmx.h"
 
-char *mx_replace_substr(const char *str, const char *sub, const char *replace) {
-    int len;
-    char *new;
+static int count_matches(const char *str, const char *sub, int sub_len) {
+    int count = 0;
 
-    if (str && sub && replace && mx_strlen(str) >= mx_strlen(sub)) {
-        len = mx_strlen(str) + mx_count_substr(str, sub) 
-            * (mx_strlen(replace) - mx_strlen(sub));
-        new = mx_strnew(len);
-
-        for (int i = 0; i < len; ) {
-            if (mx_memcmp(str, sub, mx_strlen(sub)) == 0)  {
-                str += mx_strlen(sub);
-                for (int k = 0; k < mx_strlen(replace); k++)
-                    new[i++] = replace[k];
-                continue ;
-            }
-            new[i] = *str;
+    while (*str != '\0') {
+        if (mx_strncmp(str, sub, sub_len) == 0) {
+            count++;
+            str += sub_len;
+        } else {
             str++;
-            i++;
         }
-
-        return new;
     }
+    return count;
+}
 
-    return NULL;
+char *mx_replace_substr(const char *str, const char *sub, const char *replace) {
+    if (str == NULL || sub == NULL || replace == NULL || *sub == '\0')
+        return NULL;
+
+    int sub_len = mx_strlen(sub);
+    int rep_len = mx_strlen(replace);
+    int count = count_matches(str, sub, sub_len);
+    char *res = mx_strnew(mx_strlen(str) + count * (rep_len - sub_len));
+    char *out = res;
+
+    if (res == NULL)
+        return NULL;
+    while (*str != '\0') {
+        if (mx_strncmp(str, sub, sub_len) == 0) {
+            for (int k = 0; k < rep_len; k++)
+                *out++ = replace[k];
+            str += sub_len;
+        } else {
+            *out++ = *str++;
+        }
+    }
+    return res;
 }

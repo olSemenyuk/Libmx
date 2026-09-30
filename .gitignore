@@ -49,3 +49,5 @@ tmp/
 temp/
 
 *.o
+*.a
+obj/

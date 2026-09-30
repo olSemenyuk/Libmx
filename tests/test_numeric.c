@@ -6,7 +6,8 @@ static void ctype_case(const char *name, int c, int got, int exp) {
     g_checks++;
     if ((got != 0) != (exp != 0)) {
         g_failed++;
-        fprintf(stderr, "%s:%d: FAIL: %s(%d) returned %d, expected %d\n", __FILE__, __LINE__, name, c, got != 0, exp != 0);
+        fprintf(stderr, "%s:%d: FAIL: %s(%d) returned %d, expected %d\n",
+                __FILE__, __LINE__, name, c, got != 0, exp != 0);
     }
 }
 
@@ -35,6 +36,10 @@ static void test_atoi(void) {
     CHECK_INT(mx_atoi("+"), 0);
     CHECK_INT(mx_atoi("2147483647"), INT_MAX);
     CHECK_INT(mx_atoi("-2147483648"), INT_MIN);
+    CHECK_INT(mx_atoi("2147483648"), INT_MAX);
+    CHECK_INT(mx_atoi("99999999999"), INT_MAX);
+    CHECK_INT(mx_atoi("-2147483649"), INT_MIN);
+    CHECK_INT(mx_atoi("-99999999999"), INT_MIN);
 }
 
 static void test_itoa(void) {
@@ -74,8 +79,8 @@ static void test_nbr_to_hex(void) {
     CHECK_OWN(mx_nbr_to_hex(255), "ff");
     CHECK_OWN(mx_nbr_to_hex(4096), "1000");
     CHECK_OWN(mx_nbr_to_hex(0xdeadbeefUL), "deadbeef");
-
-    if (sizeof(unsigned long) == 8) CHECK_OWN(mx_nbr_to_hex(ULONG_MAX), "ffffffffffffffff");
+    if (sizeof(unsigned long) == 8)
+        CHECK_OWN(mx_nbr_to_hex(ULONG_MAX), "ffffffffffffffff");
 }
 
 static void test_hex_to_nbr(void) {

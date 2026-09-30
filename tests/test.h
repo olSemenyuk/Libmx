@@ -51,7 +51,7 @@ static inline void t_ptr(const char *f, int l, const char *expr, const void *got
 
 static inline void t_mem(const char *f, int l, const char *expr, const void *got, const void *exp, size_t n) {
     g_checks++;
-    if (memcmp(got, exp, n) != 0) t_fail(f, l, expr);
+    if (got == NULL || exp == NULL || memcmp(got, exp, n) != 0) t_fail(f, l, expr);
 }
 
 #define CHECK(c)            t_bool(__FILE__, __LINE__, #c, (c) ? 1 : 0)

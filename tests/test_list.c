@@ -96,6 +96,19 @@ static void test_push_pop(void) {
     CHECK_PTR(list, NULL);
 }
 
+static void test_pop_back_long(void) {
+    const char *in[] = {"a", "b", "c", "d"};
+    const char *e3[] = {"a", "b", "c"};
+    const char *e2[] = {"a", "b"};
+    t_list *l = build(in, 4);
+
+    mx_pop_back(&l);
+    expect(l, e3, 3);
+    mx_pop_back(&l);
+    expect(l, e2, 2);
+    list_free(l);
+}
+
 static void test_sort_list(void) {
     const char *rev_in[]   = {"pear", "apple", "grape"};
     const char *rev_out[]  = {"apple", "grape", "pear"};
@@ -118,5 +131,6 @@ void run_list_tests(void) {
     test_create_node();
     test_list_size();
     test_push_pop();
+    test_pop_back_long();
     test_sort_list();
 }

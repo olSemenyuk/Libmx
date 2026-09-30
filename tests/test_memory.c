@@ -93,6 +93,9 @@ static void test_memmem(void) {
 
     const char aab[] = "aab";
     CHECK_PTR(mx_memmem(aab, 3, "ab", 2), aab + 1);
+    CHECK_PTR(mx_memmem(big, 6, "c", 1), big + 2);
+    CHECK_PTR(mx_memmem(big, 6, "f", 1), big + 5);
+    CHECK_PTR(mx_memmem(big, 0, "a", 1), NULL);
 }
 
 static void test_memccpy(void) {

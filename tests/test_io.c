@@ -7,28 +7,53 @@
 #include <unistd.h>
 
 static int g_saved_fd = -1;
-static FILE *g_cap = NULL;
+static int g_cap_fd_file = -1;
+static int g_cap_fd = STDOUT_FILENO;
 static int g_sum = 0;
+
 static int g_calls = 0;
 
+static void cap_begin_fd(int fd) {
+    char path[] = "/tmp/libmx_capture_XXXXXX";
+
+    fflush(NULL);
+
+    g_cap_fd = fd;
+    g_saved_fd = dup(fd);
+    g_cap_fd_file = mkstemp(path);
+
+    REQUIRE(g_saved_fd >= 0);
+    REQUIRE(g_cap_fd_file >= 0);
+    REQUIRE(unlink(path) == 0);
+
+    REQUIRE(dup2(g_cap_fd_file, fd) >= 0);
+}
+
 static void cap_begin(void) {
-    fflush(stdout);
-    g_saved_fd = dup(STDOUT_FILENO);
-    g_cap = tmpfile();
-    REQUIRE(g_saved_fd >= 0 && g_cap != NULL);
-    dup2(fileno(g_cap), STDOUT_FILENO);
+    cap_begin_fd(STDOUT_FILENO);
 }
 
 static void cap_end(char *buf, size_t size) {
-    size_t n;
+    fflush(NULL);
 
-    fflush(stdout);
-    dup2(g_saved_fd, STDOUT_FILENO);
+    REQUIRE(dup2(g_saved_fd, g_cap_fd) >= 0);
+
     close(g_saved_fd);
-    rewind(g_cap);
-    n = fread(buf, 1, size - 1, g_cap);
+    g_saved_fd = -1;
+
+    REQUIRE(lseek(g_cap_fd_file, 0, SEEK_SET) >= 0);
+    ssize_t bytes = read(g_cap_fd_file, buf, size - 1);
+    REQUIRE(bytes >= 0);
+    size_t n = (size_t)bytes;
     buf[n] = '\0';
-    fclose(g_cap);
+
+    close(g_cap_fd_file);
+    g_cap_fd_file = -1;
+
+    for (size_t i = 0; i < n; i++) {
+        if (buf[i] == '\0')
+            buf[i] = '\1';
+    }
 }
 
 static void add(int x) {
@@ -126,6 +151,15 @@ static void test_print_strarr(void) {
     CHECK_STR(buf, "");
 }
 
+static void test_printerr(void) {
+    char buf[256];
+
+    cap_begin_fd(STDERR_FILENO);
+    mx_printerr("oops");
+    cap_end(buf, sizeof buf);
+    CHECK_STR(buf, "oops");
+}
+
 static void test_foreach(void) {
     int arr[] = {1, 2, 3, 4};
 
@@ -178,6 +212,7 @@ void run_io_tests(void) {
     test_printint();
     test_print_unicode();
     test_print_strarr();
+    test_printerr();
     test_foreach();
     test_file_to_str();
 }
