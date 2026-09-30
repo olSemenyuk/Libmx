@@ -1,4 +1,3 @@
-/* dup/dup2/fileno/mkstemp потребують POSIX під строгим -std=c11 (Linux/glibc) */
 #ifndef __APPLE__
 #define _POSIX_C_SOURCE 200809L
 #endif
@@ -141,12 +140,18 @@ static void test_foreach(void) {
     CHECK_INT(g_calls, 0);
 }
 
+static int make_tmp(char *path) {
+    strcpy(path, "/tmp/libmx_test_XXXXXX");
+    return mkstemp(path);
+}
+
 static void test_file_to_str(void) {
-    char path[] = "/tmp/libmx_test_XXXXXX";
+    char path[64];
     const char data[] = "line one\nline two\n";
     size_t big_len = 10000;
     char *big = malloc(big_len + 1);
     int fd = mkstemp(path);
+    int fd = make_tmp(path);
 
     REQUIRE(fd >= 0 && big != NULL);
     REQUIRE(write(fd, data, sizeof data - 1) == (ssize_t)(sizeof data - 1));
@@ -154,9 +159,10 @@ static void test_file_to_str(void) {
     CHECK_OWN(mx_file_to_str(path), data);
     unlink(path);
 
-    for (size_t i = 0; i < big_len; i++) big[i] = (char)('a' + i % 26);
+    for (size_t i = 0; i < big_len; i++)
+        big[i] = (char)('a' + i % 26);
     big[big_len] = '\0';
-    fd = mkstemp(path);
+    fd = make_tmp(path);
     REQUIRE(fd >= 0);
     REQUIRE(write(fd, big, big_len) == (ssize_t)big_len);
     close(fd);
