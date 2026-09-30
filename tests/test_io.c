@@ -150,7 +150,6 @@ static void test_file_to_str(void) {
     const char data[] = "line one\nline two\n";
     size_t big_len = 10000;
     char *big = malloc(big_len + 1);
-    int fd = mkstemp(path);
     int fd = make_tmp(path);
 
     REQUIRE(fd >= 0 && big != NULL);

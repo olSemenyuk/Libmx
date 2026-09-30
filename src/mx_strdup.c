@@ -6,8 +6,9 @@ char *mx_strdup(const char *str) {
 
     size = mx_strlen(str);
     dst = mx_strnew(size);
-    if (dst == 0)
-        return 0;
+
+    if (dst == 0) return 0;
+
     mx_strcpy(dst, str);
     return dst;
 }

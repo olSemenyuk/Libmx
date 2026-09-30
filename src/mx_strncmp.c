@@ -8,5 +8,6 @@ int mx_strncmp(const char *s1, const char *s2, int n) {
         if (a[i] != b[i] || a[i] == '\0')
             return a[i] - b[i];
     }
+    
     return 0;
 }

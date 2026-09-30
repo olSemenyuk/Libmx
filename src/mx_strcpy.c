@@ -7,6 +7,8 @@ char *mx_strcpy(char *dst, const char *src) {
 		dst[i] = src[i];
         i++;
 	}
+
     dst[i] = '\0';
+
     return dst;
 }

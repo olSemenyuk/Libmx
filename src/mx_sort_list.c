@@ -1,8 +1,7 @@
 #include "libmx.h"
 
 t_list *mx_sort_list(t_list *lst, bool (*cmp)(void *, void *)) {
-    if (lst == NULL || cmp == NULL)
-        return lst;
+    if (lst == NULL || cmp == NULL) return lst;
 
     int count = mx_list_size(lst);
 
@@ -18,5 +17,6 @@ t_list *mx_sort_list(t_list *lst, bool (*cmp)(void *, void *)) {
             }
         }
     }
+
     return lst;
 }
