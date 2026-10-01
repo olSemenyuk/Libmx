@@ -1,22 +1,29 @@
 #include "libmx.h"
+#include <unistd.h>
 
 void mx_print_unicode(wchar_t c) {
-    char byte;
-    int counter = 0;
-    int bit_and = 0;
-    int bit_or = 0;
+    unsigned char buf[4];
+    unsigned int cp = (unsigned int)c;
+    int len;
 
-    c <= 127 ? write(1, &c, 1) : c;
-    if (c > 127) {
-        c >= 2048 ? c >= 65536 ? (counter = 3, bit_and = 7, bit_or = 240)
-                               : (counter = 2, bit_and = 15, bit_or = 224)
-                               : (counter = 1, bit_and = 31, bit_or = 192);
-        for (int i = counter; i >= 0; i--) {
-            if (i == counter)
-                byte = (c >> (6 * i) & bit_and) | bit_or;
-            else
-                byte = (c >> (6 * i) & 63) | 128;
-            write(1, &byte, 1);
-        }
+    if (cp < 0x80) {
+        buf[0] = (unsigned char)cp;
+        len = 1;
+    } else if (cp < 0x800) {
+        buf[0] = (unsigned char)(0xC0 | (cp >> 6));
+        buf[1] = (unsigned char)(0x80 | (cp & 0x3F));
+        len = 2;
+    } else if (cp < 0x10000) {
+        buf[0] = (unsigned char)(0xE0 | (cp >> 12));
+        buf[1] = (unsigned char)(0x80 | ((cp >> 6) & 0x3F));
+        buf[2] = (unsigned char)(0x80 | (cp & 0x3F));
+        len = 3;
+    } else {
+        buf[0] = (unsigned char)(0xF0 | (cp >> 18));
+        buf[1] = (unsigned char)(0x80 | ((cp >> 12) & 0x3F));
+        buf[2] = (unsigned char)(0x80 | ((cp >> 6) & 0x3F));
+        buf[3] = (unsigned char)(0x80 | (cp & 0x3F));
+        len = 4;
     }
+    write(1, buf, (size_t)len);
 }

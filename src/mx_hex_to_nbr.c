@@ -1,26 +1,22 @@
-unsigned long mx_hex_to_nbr(const char *hex) {
-	int count = 0;
-	unsigned long result = 0;
-	unsigned long mult = 1;
+#include "libmx.h"
 
-	if (hex)
-		while (hex[count])
-			count++;
-	else
-		return result;
-	for (int i = 0; i <= count; i++) {
-		if (hex[count - i] >= '0' && hex[count - i] <= '9') {
-			result = result + (hex[count - i] - 48) * mult;
-			mult = mult * 16;
-		}
-		if (hex[count - i] >= 'A' && hex[count - i] <= 'F') {
-			result = result + (hex[count - i] - 55) * mult;
-			mult = mult * 16;
-		}
-		if (hex[count - i] >= 'a' && hex[count - i] <= 'f') {
-			result = result + (hex[count - i] - 87) * mult;
-			mult = mult * 16;
-		}
-	}
-	return result;
+unsigned long mx_hex_to_nbr(const char *hex) {
+    unsigned long res = 0;
+
+    if (hex == NULL)
+        return 0;
+    for (int i = 0; hex[i] != '\0'; i++) {
+        int val;
+
+        if (hex[i] >= '0' && hex[i] <= '9')
+            val = hex[i] - '0';
+        else if (hex[i] >= 'a' && hex[i] <= 'f')
+            val = hex[i] - 'a' + 10;
+        else if (hex[i] >= 'A' && hex[i] <= 'F')
+            val = hex[i] - 'A' + 10;
+        else
+            return 0;
+        res = res * 16 + (unsigned long)val;
+    }
+    return res;
 }
