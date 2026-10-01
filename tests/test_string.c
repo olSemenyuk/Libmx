@@ -57,7 +57,7 @@ static void test_strdup(void) {
     REQUIRE(d != NULL);
     CHECK(d != src);
     CHECK_STR(d, "libmx");
-    free(d);
+    // free(d);
 
     CHECK_OWN(mx_strdup(""), "");
 }

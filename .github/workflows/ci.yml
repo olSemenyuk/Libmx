@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, master, logic_improvements]
+    branches: [main, master, logic_improvements, memory_leak_test]
     paths-ignore: ['**.md']
   pull_request:
     paths-ignore: ['**.md']
